@@ -1,0 +1,1 @@
+alias tree='tree --ignore-case -I venv -I "venv*"'

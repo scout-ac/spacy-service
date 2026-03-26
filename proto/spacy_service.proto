@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package spacy_service;
+
+option go_package = "scout.ac/spacy-service";
+
+message GetDocRequest {
+  string text          = 1;
+  bool tokenize        = 2;
+  bool ancestors       = 3;
+  bool children        = 4;
+  bool conjuncts       = 5;
+  bool lefts           = 6;
+  bool rights          = 7;
+  bool skip_sentiment  = 8;
+  bool skip_ents       = 9;
+  bool skip_sents      = 10;
+  bool skip_spans      = 11;
+  bool subtree         = 12;
+}
+
+service SpacyService {
+  rpc GetDoc (GetDocRequest) returns (Doc);
+}
+
+message Ancestors {
+  repeated uint32 i = 1;
+}
+
+message Children {
+  repeated uint32 i = 1;
+}
+
+message Conjuncts {
+  repeated uint32 i = 1;
+}
+
+message Lefts {
+  repeated uint32 i = 1;
+}
+
+message Rights {
+  repeated uint32 i = 1;
+}
+
+message Subtree {
+  repeated uint32 i = 1;
+}
+
+message Ent {
+  uint32 start      = 1;
+  uint32 start_char = 2;
+  uint32 end        = 3;
+  uint32 end_char   = 4;
+  string label      = 5;
+  double sentiment  = 6;
+}
+
+message Sent {
+  uint32 start      = 1;
+  uint32 start_char = 2;
+  uint32 end        = 3;
+  uint32 end_char   = 4;
+  string label      = 5;
+  double sentiment  = 6;
+  repeated Ent ents = 7;
+}
+
+message Span {
+  uint32 start      = 1;
+  uint32 start_char = 2;
+  uint32 end        = 3;
+  uint32 end_char   = 4;
+  double sentiment  = 5;
+}
+
+message Token {
+  uint32 i            = 1;
+  uint32 id           = 2;
+  uint32 start_char   = 3;
+  uint32 end_char     = 4;
+  string tag          = 5;
+  string pos          = 6;
+  string morph        = 7;
+  string lemma        = 8;
+  string dep          = 9;
+  string ent_type     = 10;
+  uint32 head         = 11;
+  bool is_alpha       = 12;
+  bool is_ascii       = 13;
+  bool is_bracket     = 14;
+  bool is_currency    = 15;
+  bool is_digit       = 16;
+  bool is_left_punct  = 17;
+  bool is_lower       = 18;
+  bool is_punct       = 19;
+  bool is_quote       = 20;
+  bool is_right_punct = 21;
+  bool is_sent_end    = 22;
+  bool is_sent_start  = 23;
+  bool is_space       = 24;
+  bool is_stop        = 25;
+  bool is_title       = 26;
+  bool is_upper       = 27;
+  bool like_email     = 28;
+  bool like_num       = 29;
+  bool like_url       = 30;
+  string lang         = 31;
+  string lower        = 32;
+  double sentiment    = 33;
+  Ancestors ancestors = 34;
+  Children children   = 35;
+  Lefts lefts         = 36;
+  Rights rights       = 37;
+  Conjuncts conjuncts = 38;
+  Subtree subtree     = 39;
+  string text         = 40;
+}
+
+message Doc {
+  string text           = 1;
+  repeated Ent ents     = 2;
+  repeated Sent sents   = 3;
+  repeated Span spans   = 4;
+  repeated Token tokens = 5;
+  double sentiment      = 6;
+}

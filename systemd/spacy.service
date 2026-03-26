@@ -1,0 +1,12 @@
+[Unit]
+Description=spaCy NLP service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/spacy-service/
+ExecStart=%h/spacy-service/spacy-service.sh
+RestartSec=2
+Restart=always
+
+[Install]
+WantedBy=default.target
