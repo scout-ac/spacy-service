@@ -22,7 +22,8 @@ class GetDocRequest(betterproto.Message):
     skip_sents: bool = betterproto.bool_field(10)
     skip_spans: bool = betterproto.bool_field(11)
     skip_coref: bool = betterproto.bool_field(12)
-    subtree: bool = betterproto.bool_field(13)
+    skip_noun_chunks: bool = betterproto.bool_field(13)
+    subtree: bool = betterproto.bool_field(14)
 
 
 @dataclass
@@ -83,6 +84,17 @@ class Span(betterproto.Message):
     end: int = betterproto.uint32_field(3)
     end_char: int = betterproto.uint32_field(4)
     sentiment: float = betterproto.double_field(5)
+
+
+@dataclass
+class NounChunk(betterproto.Message):
+    start: int = betterproto.uint32_field(1)
+    start_char: int = betterproto.uint32_field(2)
+    end: int = betterproto.uint32_field(3)
+    end_char: int = betterproto.uint32_field(4)
+    sentiment: float = betterproto.double_field(5)
+    text: str = betterproto.string_field(6)
+    label: str = betterproto.string_field(7)
 
 
 @dataclass
@@ -152,6 +164,7 @@ class Doc(betterproto.Message):
     tokens: List["Token"] = betterproto.message_field(5)
     sentiment: float = betterproto.double_field(6)
     coref_chains: List["CorefChain"] = betterproto.message_field(7)
+    noun_chunks: List["NounChunk"] = betterproto.message_field(8)
 
 
 class SpacyServiceStub(betterproto.ServiceStub):
@@ -170,6 +183,7 @@ class SpacyServiceStub(betterproto.ServiceStub):
         skip_sents: bool = False,
         skip_spans: bool = False,
         skip_coref: bool = False,
+        skip_noun_chunks: bool = False,
         subtree: bool = False,
     ) -> Doc:
         request = GetDocRequest()
@@ -185,6 +199,7 @@ class SpacyServiceStub(betterproto.ServiceStub):
         request.skip_sents = skip_sents
         request.skip_spans = skip_spans
         request.skip_coref = skip_coref
+        request.skip_noun_chunks = skip_noun_chunks
         request.subtree = subtree
 
         return await self._unary_unary(

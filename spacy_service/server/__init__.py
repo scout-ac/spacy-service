@@ -8,7 +8,7 @@ from spacy.tokens import Doc as SpacyDoc, Span as SpacySpan
 from spacy_service.generated import spacy_service_pb2_grpc
 from spacy_service.generated.spacy_service_pb2 import (
     Ancestors, Children, CorefChain, CorefMention, Conjuncts, Doc, Ent,
-    GetDocRequest, Lefts, Rights, Sent, Span, Subtree, Token
+    GetDocRequest, Lefts, NounChunk, Rights, Sent, Span, Subtree, Token
 )
 
 
@@ -59,6 +59,33 @@ class SpacyService(spacy_service_pb2_grpc.SpacyServiceServicer):
                 most_specific_mention_index=chain.most_specific_mention_index,
             ))
         return chains
+
+    def _spans(self, doc:SpacyDoc, request:GetDocRequest) -> list[Span]:
+        return [
+            Span(
+                start=span.start,
+                start_char=span.start_char,
+                end=span.end,
+                end_char=span.end_char,
+                sentiment=None if request.skip_sentiment else span.sentiment,
+            )
+            for spans in doc.spans.values()
+            for span in spans
+        ]
+
+    def _noun_chunks(self, doc:SpacyDoc, request:GetDocRequest) -> list[NounChunk]:
+        return [
+            NounChunk(
+                start=chunk.start,
+                start_char=chunk.start_char,
+                end=chunk.end,
+                end_char=chunk.end_char,
+                sentiment=None if request.skip_sentiment else chunk.sentiment,
+                text=chunk.text,
+                label=chunk.label_,
+            )
+            for chunk in doc.noun_chunks
+        ]
 
     def _tokenize(self, doc:SpacyDoc, request:GetDocRequest) -> list[Token]:
         # Pre-size list for a bit of efficiency.
@@ -168,16 +195,19 @@ class SpacyService(spacy_service_pb2_grpc.SpacyServiceServicer):
             end = datetime.now()
             print("Made ents, took  " + str(end-start))
 
-        # spans = [
-        #     Spans(
-        #         start=span.start,
-        #         start_char=span.start_char,
-        #         end=span.end,
-        #         end_char=span.end_char,
-        #         sentiment=span.sentiment,
-        #     )
-        #     for span in doc.spans
-        # ]
+        spans: list[Span] = []
+        if not request.skip_spans:
+            start = datetime.now()
+            spans = self._spans(doc, request)
+            end = datetime.now()
+            print("Made spans, took " + str(end-start))
+
+        noun_chunks: list[NounChunk] = []
+        if not request.skip_noun_chunks:
+            start = datetime.now()
+            noun_chunks = self._noun_chunks(doc, request)
+            end = datetime.now()
+            print("Made noun_chunks, took " + str(end-start))
 
         ######################################################################
 
@@ -197,9 +227,11 @@ class SpacyService(spacy_service_pb2_grpc.SpacyServiceServicer):
             text=text if text else None,
             ents=ents if ents else None,
             sents=sents if sents else None,
-            sentiment=sentiment if sentiment != 0.0 else None,
+            spans=spans if spans else None,
             tokens=tokens if tokens else None,
+            sentiment=sentiment if sentiment != 0.0 else None,
             coref_chains=coref_chains if coref_chains else None,
+            noun_chunks=noun_chunks if noun_chunks else None,
         )
         print("Done!")
         return ret
