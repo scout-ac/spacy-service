@@ -7,8 +7,8 @@ from spacy.language import Language
 from spacy.tokens import Doc as SpacyDoc, Span as SpacySpan
 from spacy_service.generated import spacy_service_pb2_grpc
 from spacy_service.generated.spacy_service_pb2 import (
-    Ancestors, Children, Conjuncts, Doc, Ent, GetDocRequest,
-    Lefts, Rights, Sent, Span, Subtree, Token
+    Ancestors, Children, CorefChain, CorefMention, Conjuncts, Doc, Ent,
+    GetDocRequest, Lefts, Rights, Sent, Span, Subtree, Token
 )
 
 
@@ -43,6 +43,23 @@ class SpacyService(spacy_service_pb2_grpc.SpacyServiceServicer):
             for sent in doc.sents
         ]
 
+    def _coref_chains(self, doc: SpacyDoc) -> list[CorefChain]:
+        chains = []
+        for chain in doc._.coref_chains:
+            mentions = [
+                CorefMention(
+                    token_indexes=list(mention.token_indexes),
+                    root_index=mention.root_index,
+                )
+                for mention in chain.mentions
+            ]
+            chains.append(CorefChain(
+                index=chain.index,
+                mentions=mentions,
+                most_specific_mention_index=chain.most_specific_mention_index,
+            ))
+        return chains
+
     def _tokenize(self, doc:SpacyDoc, request:GetDocRequest) -> list[Token]:
         # Pre-size list for a bit of efficiency.
         tokens = [None] * len(doc)
@@ -66,6 +83,10 @@ class SpacyService(spacy_service_pb2_grpc.SpacyServiceServicer):
                 rights = Rights(i=[_.i for _ in tok.rights ])
             if request.subtree:
                 subtree = Subtree(i=[_.i for _ in tok.subtree ])
+
+            coref_chain_indexes = []
+            if tok._.coref_chains:
+                coref_chain_indexes = [c.index for c in tok._.coref_chains]
 
             tokens[idx] = Token(
                 i=tok.i,
@@ -106,6 +127,7 @@ class SpacyService(spacy_service_pb2_grpc.SpacyServiceServicer):
                 conjuncts=conjuncts,
                 subtree=subtree,
                 text=tok.text,
+                coref_chain_indexes=coref_chain_indexes,
             )
         end = datetime.now()
         print("Tokens processed, it took: " + str(end-start))
@@ -167,12 +189,17 @@ class SpacyService(spacy_service_pb2_grpc.SpacyServiceServicer):
         if not request.skip_sentiment:
             sentiment = doc.sentiment
 
+        coref_chains: list[CorefChain] = []
+        if not request.skip_coref:
+            coref_chains = self._coref_chains(doc)
+
         ret = Doc(
             text=text if text else None,
             ents=ents if ents else None,
             sents=sents if sents else None,
             sentiment=sentiment if sentiment != 0.0 else None,
             tokens=tokens if tokens else None,
+            coref_chains=coref_chains if coref_chains else None,
         )
         print("Done!")
         return ret

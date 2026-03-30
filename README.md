@@ -33,9 +33,40 @@ Install and start the service:
 ```bash
 git clone https://github.com/scout-ac/spacy-service
 cd spacy-service
+```
+
+If you want to use the extra coreferencing functionality, checkout the relevant branch (otherwise stay on `main`).
+Note, this will **downgrade** the following (version numbers correct at the time of writing this):
+
+- SpaCy from 3.8.14 to 3.5.4
+- NumPy from 2.4.4 to 1.26.4
+- `en_core_web_lg` from 3.8.0 to 3.5.0
+
+You will also see warnings like "Warning: pkg_resources is deprecated as an API".
+This is because the downgraded version of SpaCy uses an old version of `setuptools` which included `pkg_resources`.
+
+
+```bash
+git checkout coreferences
+```
+
+Then:
+
+```bash
 python3.11 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+```
+
+If you want to use coreferencing you then need to run the following:
+
+```bash
+python -m coreferee install en
+```
+
+Then you can run the example server:
+
+```bash
 python ./example-server.py
 ```
 

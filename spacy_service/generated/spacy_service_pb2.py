@@ -21,7 +21,8 @@ class GetDocRequest(betterproto.Message):
     skip_ents: bool = betterproto.bool_field(9)
     skip_sents: bool = betterproto.bool_field(10)
     skip_spans: bool = betterproto.bool_field(11)
-    subtree: bool = betterproto.bool_field(12)
+    skip_coref: bool = betterproto.bool_field(12)
+    subtree: bool = betterproto.bool_field(13)
 
 
 @dataclass
@@ -126,6 +127,20 @@ class Token(betterproto.Message):
     conjuncts: "Conjuncts" = betterproto.message_field(38)
     subtree: "Subtree" = betterproto.message_field(39)
     text: str = betterproto.string_field(40)
+    coref_chain_indexes: List[int] = betterproto.uint32_field(41)
+
+
+@dataclass
+class CorefMention(betterproto.Message):
+    token_indexes: List[int] = betterproto.uint32_field(1)
+    root_index: int = betterproto.uint32_field(2)
+
+
+@dataclass
+class CorefChain(betterproto.Message):
+    index: int = betterproto.uint32_field(1)
+    mentions: List["CorefMention"] = betterproto.message_field(2)
+    most_specific_mention_index: int = betterproto.uint32_field(3)
 
 
 @dataclass
@@ -136,6 +151,7 @@ class Doc(betterproto.Message):
     spans: List["Span"] = betterproto.message_field(4)
     tokens: List["Token"] = betterproto.message_field(5)
     sentiment: float = betterproto.double_field(6)
+    coref_chains: List["CorefChain"] = betterproto.message_field(7)
 
 
 class SpacyServiceStub(betterproto.ServiceStub):
@@ -153,6 +169,7 @@ class SpacyServiceStub(betterproto.ServiceStub):
         skip_ents: bool = False,
         skip_sents: bool = False,
         skip_spans: bool = False,
+        skip_coref: bool = False,
         subtree: bool = False,
     ) -> Doc:
         request = GetDocRequest()
@@ -167,6 +184,7 @@ class SpacyServiceStub(betterproto.ServiceStub):
         request.skip_ents = skip_ents
         request.skip_sents = skip_sents
         request.skip_spans = skip_spans
+        request.skip_coref = skip_coref
         request.subtree = subtree
 
         return await self._unary_unary(

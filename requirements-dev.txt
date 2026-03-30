@@ -1,0 +1,6 @@
+# BetterProto generates nicer Python from protobufs than the default option.
+betterproto[compiler]
+
+# gRPC things.
+grpcio-tools
+
