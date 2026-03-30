@@ -16,7 +16,8 @@ message GetDocRequest {
   bool skip_ents       = 9;
   bool skip_sents      = 10;
   bool skip_spans      = 11;
-  bool subtree         = 12;
+  bool skip_noun_chunks = 12;
+  bool subtree         = 13;
 }
 
 service SpacyService {
@@ -74,6 +75,16 @@ message Span {
   double sentiment  = 5;
 }
 
+message NounChunk {
+  uint32 start      = 1;
+  uint32 start_char = 2;
+  uint32 end        = 3;
+  uint32 end_char   = 4;
+  double sentiment  = 5;
+  string text       = 6;
+  string label      = 7;
+}
+
 message Token {
   uint32 i            = 1;
   uint32 id           = 2;
@@ -118,10 +129,11 @@ message Token {
 }
 
 message Doc {
-  string text           = 1;
-  repeated Ent ents     = 2;
-  repeated Sent sents   = 3;
-  repeated Span spans   = 4;
-  repeated Token tokens = 5;
-  double sentiment      = 6;
+  string text                       = 1;
+  repeated Ent ents                 = 2;
+  repeated Sent sents               = 3;
+  repeated Span spans               = 4;
+  repeated Token tokens             = 5;
+  double sentiment                  = 6;
+  repeated NounChunk noun_chunks    = 7;
 }

@@ -21,7 +21,8 @@ class GetDocRequest(betterproto.Message):
     skip_ents: bool = betterproto.bool_field(9)
     skip_sents: bool = betterproto.bool_field(10)
     skip_spans: bool = betterproto.bool_field(11)
-    subtree: bool = betterproto.bool_field(12)
+    skip_noun_chunks: bool = betterproto.bool_field(12)
+    subtree: bool = betterproto.bool_field(13)
 
 
 @dataclass
@@ -85,6 +86,17 @@ class Span(betterproto.Message):
 
 
 @dataclass
+class NounChunk(betterproto.Message):
+    start: int = betterproto.uint32_field(1)
+    start_char: int = betterproto.uint32_field(2)
+    end: int = betterproto.uint32_field(3)
+    end_char: int = betterproto.uint32_field(4)
+    sentiment: float = betterproto.double_field(5)
+    text: str = betterproto.string_field(6)
+    label: str = betterproto.string_field(7)
+
+
+@dataclass
 class Token(betterproto.Message):
     i: int = betterproto.uint32_field(1)
     id: int = betterproto.uint32_field(2)
@@ -136,6 +148,7 @@ class Doc(betterproto.Message):
     spans: List["Span"] = betterproto.message_field(4)
     tokens: List["Token"] = betterproto.message_field(5)
     sentiment: float = betterproto.double_field(6)
+    noun_chunks: List["NounChunk"] = betterproto.message_field(7)
 
 
 class SpacyServiceStub(betterproto.ServiceStub):
@@ -153,6 +166,7 @@ class SpacyServiceStub(betterproto.ServiceStub):
         skip_ents: bool = False,
         skip_sents: bool = False,
         skip_spans: bool = False,
+        skip_noun_chunks: bool = False,
         subtree: bool = False,
     ) -> Doc:
         request = GetDocRequest()
@@ -167,6 +181,7 @@ class SpacyServiceStub(betterproto.ServiceStub):
         request.skip_ents = skip_ents
         request.skip_sents = skip_sents
         request.skip_spans = skip_spans
+        request.skip_noun_chunks = skip_noun_chunks
         request.subtree = subtree
 
         return await self._unary_unary(
