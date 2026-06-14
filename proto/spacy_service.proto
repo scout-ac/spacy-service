@@ -87,11 +87,11 @@ message NounChunk {
 
 message Token {
   uint32 i            = 1;
-  uint32 id           = 2;
+  uint32 id           = 2 [(go.field).name = "ID"];
   uint32 start_char   = 3;
   uint32 end_char     = 4;
   string tag          = 5;
-  string pos          = 6;
+  string pos          = 6 [(go.field).name = "POS"];
   string morph        = 7;
   string lemma        = 8;
   string dep          = 9;
