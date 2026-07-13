@@ -5,19 +5,19 @@ package spacy_service;
 option go_package = "scout.ac/spacy-service";
 
 message GetDocRequest {
-  string text          = 1;
-  bool tokenize        = 2;
-  bool ancestors       = 3;
-  bool children        = 4;
-  bool conjuncts       = 5;
-  bool lefts           = 6;
-  bool rights          = 7;
-  bool skip_sentiment  = 8;
-  bool skip_ents       = 9;
-  bool skip_sents      = 10;
-  bool skip_spans      = 11;
-  bool skip_noun_chunks = 12;
-  bool subtree         = 13;
+  string text          = 1 [json_name = "text"];
+  bool tokenize        = 2 [json_name = "tokenize"];
+  bool ancestors       = 3 [json_name = "ancestors"];
+  bool children        = 4 [json_name = "children"];
+  bool conjuncts       = 5 [json_name = "conjuncts"];
+  bool lefts           = 6 [json_name = "lefts"];
+  bool rights          = 7 [json_name = "rights"];
+  bool skip_sentiment  = 8 [json_name = "skip_sentiment"];
+  bool skip_ents       = 9 [json_name = "skip_ents"];
+  bool skip_sents      = 10 [json_name = "skip_sents"];
+  bool skip_spans      = 11 [json_name = "skip_spans"];
+  bool skip_noun_chunks = 12 [json_name = "skip_noun_chunks"];
+  bool subtree         = 13 [json_name = "subtree"];
 }
 
 service SpacyService {
@@ -25,115 +25,118 @@ service SpacyService {
 }
 
 message Ancestors {
-  repeated uint32 i = 1;
+  repeated uint32 i = 1 [json_name = "i"];
 }
 
 message Children {
-  repeated uint32 i = 1;
+  repeated uint32 i = 1 [json_name = "i"];
 }
 
 message Conjuncts {
-  repeated uint32 i = 1;
+  repeated uint32 i = 1 [json_name = "i"];
 }
 
 message Lefts {
-  repeated uint32 i = 1;
+  repeated uint32 i = 1 [json_name = "i"];
 }
 
 message Rights {
-  repeated uint32 i = 1;
+  repeated uint32 i = 1 [json_name = "i"];
 }
 
 message Subtree {
-  repeated uint32 i = 1;
+  repeated uint32 i = 1 [json_name = "i"];
 }
 
 message Ent {
-  uint32 start      = 1;
-  uint32 start_char = 2;
-  uint32 end        = 3;
-  uint32 end_char   = 4;
-  string label      = 5;
-  double sentiment  = 6;
+  uint32 start      = 1 [json_name = "start"];
+  uint32 start_char = 2 [json_name = "start_char"];
+  uint32 end        = 3 [json_name = "end"];
+  uint32 end_char   = 4 [json_name = "end_char"];
+  string label      = 5 [json_name = "label"];
+  double sentiment  = 6 [json_name = "sentiment"];
 }
 
 message Sent {
-  uint32 start      = 1;
-  uint32 start_char = 2;
-  uint32 end        = 3;
-  uint32 end_char   = 4;
-  string label      = 5;
-  double sentiment  = 6;
-  repeated Ent ents = 7;
+  uint32 start      = 1 [json_name = "start"];
+  uint32 start_char = 2 [json_name = "start_char"];
+  uint32 end        = 3 [json_name = "end"];
+  uint32 end_char   = 4 [json_name = "end_char"];
+  string label      = 5 [json_name = "label"];
+  double sentiment  = 6 [json_name = "sentiment"];
+  repeated Ent ents = 7 [json_name = "ents"];
 }
 
 message Span {
-  uint32 start      = 1;
-  uint32 start_char = 2;
-  uint32 end        = 3;
-  uint32 end_char   = 4;
-  double sentiment  = 5;
+  uint32 start      = 1 [json_name = "start"];
+  uint32 start_char = 2 [json_name = "start_char"];
+  uint32 end        = 3 [json_name = "end"];
+  uint32 end_char   = 4 [json_name = "end_char"];
+  double sentiment  = 5 [json_name = "sentiment"];
 }
 
 message NounChunk {
-  uint32 start      = 1;
-  uint32 start_char = 2;
-  uint32 end        = 3;
-  uint32 end_char   = 4;
-  double sentiment  = 5;
-  string text       = 6;
-  string label      = 7;
+  uint32 start      = 1 [json_name = "start"];
+  uint32 start_char = 2 [json_name = "start_char"];
+  uint32 end        = 3 [json_name = "end"];
+  uint32 end_char   = 4 [json_name = "end_char"];
+  double sentiment  = 5 [json_name = "sentiment"];
+  string text       = 6 [json_name = "text"];
+  string label      = 7 [json_name = "label"];
 }
 
+// Note: (go.field).name bits below are stripped by scripts/generate.sh so
+// Python's protobuf tools don't error out.
+
 message Token {
-  uint32 i            = 1;
-  uint32 id           = 2 [(go.field).name = "ID"];
-  uint32 start_char   = 3;
-  uint32 end_char     = 4;
-  string tag          = 5;
-  string pos          = 6 [(go.field).name = "POS"];
-  string morph        = 7;
-  string lemma        = 8;
-  string dep          = 9;
-  string ent_type     = 10;
-  uint32 head         = 11;
-  bool is_alpha       = 12;
-  bool is_ascii       = 13;
-  bool is_bracket     = 14;
-  bool is_currency    = 15;
-  bool is_digit       = 16;
-  bool is_left_punct  = 17;
-  bool is_lower       = 18;
-  bool is_punct       = 19;
-  bool is_quote       = 20;
-  bool is_right_punct = 21;
-  bool is_sent_end    = 22;
-  bool is_sent_start  = 23;
-  bool is_space       = 24;
-  bool is_stop        = 25;
-  bool is_title       = 26;
-  bool is_upper       = 27;
-  bool like_email     = 28;
-  bool like_num       = 29;
-  bool like_url       = 30;
-  string lang         = 31;
-  string lower        = 32;
-  double sentiment    = 33;
-  Ancestors ancestors = 34;
-  Children children   = 35;
-  Lefts lefts         = 36;
-  Rights rights       = 37;
-  Conjuncts conjuncts = 38;
-  Subtree subtree     = 39;
-  string text         = 40;
+  uint32 i            = 1 [json_name = "i"];
+  uint32 id           = 2 [json_name="id", (go.field).name = "ID"];
+  uint32 start_char   = 3 [json_name = "start_char"];
+  uint32 end_char     = 4 [json_name = "end_char"];
+  string tag          = 5 [json_name = "tag"];
+  string pos          = 6 [json_name = "pos", (go.field).name = "POS"];
+  string morph        = 7 [json_name = "morph"];
+  string lemma        = 8 [json_name = "lemma"];
+  string dep          = 9 [json_name = "dep"];
+  string ent_type     = 10 [json_name = "ent_type"];
+  uint32 head         = 11 [json_name = "head"];
+  bool is_alpha       = 12 [json_name = "is_alpha"];
+  bool is_ascii       = 13 [json_name = "is_ascii"];
+  bool is_bracket     = 14 [json_name = "is_bracket"];
+  bool is_currency    = 15 [json_name = "is_currency"];
+  bool is_digit       = 16 [json_name = "is_digit"];
+  bool is_left_punct  = 17 [json_name = "is_left_punct"];
+  bool is_lower       = 18 [json_name = "is_lower"];
+  bool is_punct       = 19 [json_name = "is_punct"];
+  bool is_quote       = 20 [json_name = "is_quote"];
+  bool is_right_punct = 21 [json_name = "is_right_punct"];
+  bool is_sent_end    = 22 [json_name = "is_sent_end"];
+  bool is_sent_start  = 23 [json_name = "is_sent_start"];
+  bool is_space       = 24 [json_name = "is_space"];
+  bool is_stop        = 25 [json_name = "is_stop"];
+  bool is_title       = 26 [json_name = "is_title"];
+  bool is_upper       = 27 [json_name = "is_upper"];
+  bool like_email     = 28 [json_name = "like_email"];
+  bool like_num       = 29 [json_name = "like_num"];
+  bool like_url       = 30 [json_name = "like_url"];
+  string lang         = 31 [json_name = "lang"];
+  string lower        = 32 [json_name = "lower"];
+  double sentiment    = 33 [json_name = "sentiment"];
+  Ancestors ancestors = 34 [json_name = "ancestors"];
+  Children children   = 35 [json_name = "children"];
+  Lefts lefts         = 36 [json_name = "lefts"];
+  Rights rights       = 37 [json_name = "rights"];
+  Conjuncts conjuncts = 38 [json_name = "conjuncts"];
+  Subtree subtree     = 39 [json_name = "subtree"];
+  string text         = 40 [json_name = "text"];
 }
 
 message Doc {
-  string text                       = 1;
-  repeated Ent ents                 = 2;
-  repeated Sent sents               = 3;
-  repeated Span spans               = 4;
-  repeated Token tokens             = 5;
-  double sentiment                  = 6;
-  repeated NounChunk noun_chunks    = 7;
+  string text                       = 1 [json_name = "text"];
+  repeated Ent ents                 = 2 [json_name = "ents"];
+  repeated Sent sents               = 3 [json_name = "sents"];
+  repeated Span spans               = 4 [json_name = "spans"];
+  repeated Token tokens             = 5 [json_name = "tokens"];
+  double sentiment                  = 6 [json_name = "sentiment"];
+  repeated NounChunk noun_chunks    = 7 [json_name = "noun_chunks"];
 }
